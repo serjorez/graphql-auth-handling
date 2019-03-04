@@ -1,5 +1,5 @@
 
-name := "graphqlHttpContextHandling"
+name := "graphqlAuthHandling"
 
 version := "0.1"
 
