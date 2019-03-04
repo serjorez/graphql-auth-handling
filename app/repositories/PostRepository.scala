@@ -10,7 +10,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Provides basic CRUD operations on the Post entity.
-  * @param database a database access object
+  *
+  * @param database         a database access object
   * @param executionContext a thread pool to asynchronously execute operations
   */
 @Singleton
@@ -88,9 +89,7 @@ class PostRepository @Inject()(val database: AppDatabase,
       }
     } yield post
 
-    def delete(id: Long): DBIO[Boolean] = for {
-      deleteCount <- postQuery.filter(_.id === id).delete
-      isDeleted = if (deleteCount == 1) true else false
-    } yield isDeleted
+    def delete(id: Long): DBIO[Boolean] = postQuery.filter(_.id === id).delete.map(_ == 1)
   }
+
 }
