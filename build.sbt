@@ -20,5 +20,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick" % "4.0.0",
   "com.typesafe.play" %% "play-slick-evolutions" % "4.0.0",
   "com.typesafe.slick" %% "slick" % "3.3.0",
-  "com.typesafe.slick" %% "slick-hikaricp" % "3.3.0"
+  "com.typesafe.slick" %% "slick-hikaricp" % "3.3.0",
+  "com.pauldijou" %% "jwt-core" % "2.1.0"
 )
