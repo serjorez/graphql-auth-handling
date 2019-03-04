@@ -60,7 +60,7 @@ class PostSchema @Inject()(postResolver: PostResolver,
             postResolver.addPost(
               sangriaContext.args.arg[String]("title"),
               sangriaContext.args.arg[String]("content"),
-              userId
+              userId.toLong //TODO fix that
             )
         )
     ),

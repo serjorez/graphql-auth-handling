@@ -36,7 +36,7 @@ class PostResolver @Inject()(val postRepository: Repository[Post],
     * @param authorId an id of the post's author
     * @return added post
     */
-  def addPost(title: String, content: String, authorId: String): Future[Post] = {
+  def addPost(title: String, content: String, authorId: Long): Future[Post] = {
     withTitleValidation(title) {
       postRepository.create(Post(authorId = authorId, title = title, content = content))
     }
