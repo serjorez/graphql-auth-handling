@@ -1,9 +1,11 @@
 package graphql.resolvers
 
 import com.google.inject.Inject
-import models.Post
-import models.errors.NotFound
-import repositories.Repository
+import graphql.GraphQLContext
+import models.{Post, User}
+import models.errors.{Forbidden, NotFound}
+import repositories.{Repository, UserRepository}
+import services.AuthorizeService
 import validators.PostValidator
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -15,11 +17,14 @@ import scala.concurrent.{ExecutionContext, Future}
   * @param postValidator    a validator that contains functions that validates the Post's fields
   * @param executionContext a thread pool to asynchronously execute operations
   */
-class PostResolver @Inject()(val postRepository: Repository[Post],
-                             val postValidator: PostValidator,
+class PostResolver @Inject()(postRepository: Repository[Post],
+                             userRepository: UserRepository,
+                             postValidator: PostValidator,
+                             authorizeService: AuthorizeService,
                              implicit val executionContext: ExecutionContext) {
 
   import postValidator._
+  import authorizeService._
 
   /**
     * Finds all posts.
@@ -31,15 +36,17 @@ class PostResolver @Inject()(val postRepository: Repository[Post],
   /**
     * Adds a post.
     *
-    * @param title    a title of the post
-    * @param content  a content of the post
-    * @param authorId an id of the post's author
+    * @param title   a title of the post
+    * @param content a content of the post
+    * @param context a context of the GraphQL operation
     * @return added post
     */
-  def addPost(title: String, content: String, authorId: Long): Future[Post] = {
-    withTitleValidation(title) {
-      postRepository.create(Post(authorId = authorId, title = title, content = content))
-    }
+  def addPost(title: String, content: String)
+             (context: GraphQLContext): Future[Post] = withAuthorization(context) {
+    userId =>
+      withTitleValidation(title) {
+        postRepository.create(Post(authorId = userId, title = title, content = content))
+      }
   }
 
   /**
@@ -56,19 +63,47 @@ class PostResolver @Inject()(val postRepository: Repository[Post],
     * @param id      an id of the post
     * @param title   a title of the post
     * @param content a content of the post
+    * @param context a context of the GraphQL operation
     * @return updated post
     */
-  def updatePost(id: Long, title: String, content: String): Future[Post] = for {
-    mayBePost <- postRepository.find(id)
-    authorId <- mayBePost.map(post => Future.successful(post.authorId)).getOrElse(Future.failed(NotFound(s"Can't find author of post with id=$id.")))
-    updatedPost <- postRepository.update(Post(Some(id), authorId, title, content))
-  } yield updatedPost
+  def updatePost(id: Long, title: String, content: String)
+                (context: GraphQLContext): Future[Post] = withAuthorization(context) {
+    userId =>
+      postRepository.find(id).flatMap {
+        case Some(post) =>
+          if (post.authorId == userId) {
+            postRepository.update(Post(post.id, post.authorId, title, content))
+          } else {
+            userRepository.find(userId).flatMap {
+              case Some(user) if user.role == User.role.ADMIN =>
+                postRepository.update(Post(post.id, post.authorId, title, content))
+              case _ => Future.failed(Forbidden(s"Only author of the post with id: [$id] can update it."))
+            }
+          }
+      }
+  }
 
   /**
     * Deletes a post by id.
     *
-    * @param id an id of the post
+    * @param id      an id of the post
+    * @param context a context of the GraphQL operation
     * @return true if the post was deleted, else otherwise
     */
-  def deletePost(id: Long): Future[Boolean] = postRepository.delete(id)
+  def deletePost(id: Long)
+                (context: GraphQLContext): Future[Boolean] = withAuthorization(context) {
+    userId =>
+      postRepository.find(id).flatMap {
+        case Some(post) =>
+          if (post.authorId == userId) {
+            postRepository.delete(id)
+          } else {
+            userRepository.find(userId).flatMap {
+              case Some(user) if user.role == User.role.ADMIN =>
+                postRepository.delete(id)
+              case _ => Future.failed(Forbidden(s"Only author of the post with id: [$id] can delete it."))
+            }
+          }
+      }
+  }
 }
