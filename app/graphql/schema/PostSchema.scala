@@ -6,14 +6,14 @@ import graphql.resolvers.PostResolver
 import models.Post
 import sangria.macros.derive.{ObjectTypeName, deriveObjectType}
 import sangria.schema._
-import services.PostsAuthorizeService
+import services.AuthorizeService
 import validators.AdminAccessValidator
 
 /**
   * Defines GraphQL schema for the Post entity.
   */
 class PostSchema @Inject()(postResolver: PostResolver,
-                           authorizeService: PostsAuthorizeService,
+                           authorizeService: AuthorizeService,
                            adminAccessValidator: AdminAccessValidator) {
 
   /**
@@ -55,7 +55,7 @@ class PostSchema @Inject()(postResolver: PostResolver,
         Argument("content", StringType)
       ),
       resolve = sangriaContext =>
-        authorizeService.withPostAuthorization(sangriaContext.ctx)(
+        authorizeService.withAuthorization(sangriaContext.ctx)(
           userId =>
             postResolver.addPost(
               sangriaContext.args.arg[String]("title"),

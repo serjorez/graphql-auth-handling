@@ -7,7 +7,7 @@ import scala.concurrent.Future
 /**
   * Determines authorizing functions.
   */
-trait PostsAuthorizeService {
+trait AuthorizeService {
 
   /**
     * Authorizing user using data from the context.
@@ -17,5 +17,5 @@ trait PostsAuthorizeService {
     * @tparam T generic return type
     * @return result of the callback function
     */
-  def withPostAuthorization[T](context: GraphQLContext)(callback: String => Future[T]): Future[T]
+  def withAuthorization[T](context: GraphQLContext)(callback: Long => Future[T]): Future[T]
 }
