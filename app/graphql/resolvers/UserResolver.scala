@@ -7,13 +7,13 @@ import models.jwt.{JwtContent, Tokens}
 import models.User
 import org.mindrot.jbcrypt.BCrypt
 import repositories.UserRepository
-import services.{AuthorizeService, JwtAuthService}
+import services.{AuthorizationService, JwtAuthService}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class UserResolver @Inject()(userRepository: UserRepository,
                              jwtAuthService: JwtAuthService,
-                             authorizeService: AuthorizeService,
+                             authorizeService: AuthorizationService,
                              implicit val executionContext: ExecutionContext) {
 
   import authorizeService._

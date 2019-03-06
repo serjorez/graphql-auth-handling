@@ -5,7 +5,7 @@ import graphql.GraphQLContext
 import models.{Post, User}
 import models.errors.{Forbidden, NotFound}
 import repositories.{Repository, UserRepository}
-import services.AuthorizeService
+import services.AuthorizationService
 import validators.PostValidator
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -20,7 +20,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PostResolver @Inject()(postRepository: Repository[Post],
                              userRepository: UserRepository,
                              postValidator: PostValidator,
-                             authorizeService: AuthorizeService,
+                             authorizeService: AuthorizationService,
                              implicit val executionContext: ExecutionContext) {
 
   import postValidator._

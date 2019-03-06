@@ -7,7 +7,7 @@ import scala.concurrent.Future
 /**
   * Determines authorizing functions.
   */
-trait AuthorizeService {
+trait AuthorizationService {
 
   /**
     * Authorizing user using data from the context.

@@ -6,13 +6,13 @@ import graphql.resolvers.PostResolver
 import models.Post
 import sangria.macros.derive.{ObjectTypeName, deriveObjectType}
 import sangria.schema._
-import services.AuthorizeService
+import services.AuthorizationService
 
 /**
   * Defines GraphQL schema for the Post entity.
   */
 class PostSchema @Inject()(postResolver: PostResolver,
-                           authorizeService: AuthorizeService) {
+                           authorizeService: AuthorizationService) {
 
   /**
     * Sangria's representation of the Post type.

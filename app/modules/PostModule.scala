@@ -3,7 +3,7 @@ package modules
 import com.google.inject.{AbstractModule, Provides, Scopes}
 import models.Post
 import repositories.{PostRepository, Repository}
-import services.{AuthorizeService, AuthorizeServiceImpl}
+import services.{AuthorizationService, AuthorizationServiceImpl}
 import validators.{PostValidator, PostValidatorImpl}
 
 /**
@@ -16,7 +16,7 @@ class PostModule extends AbstractModule {
     */
   override def configure(): Unit = {
     bind(classOf[PostValidator]).to(classOf[PostValidatorImpl]).in(Scopes.SINGLETON)
-    bind(classOf[AuthorizeService]).to(classOf[AuthorizeServiceImpl]).in(Scopes.SINGLETON)
+    bind(classOf[AuthorizationService]).to(classOf[AuthorizationServiceImpl]).in(Scopes.SINGLETON)
   }
 
   /**

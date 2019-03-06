@@ -10,7 +10,7 @@ import scala.util.{Failure, Success}
 /**
   * Provides authorizing functions.
   */
-class AuthorizeServiceImpl @Inject()(jwtAuthService: JwtAuthService) extends AuthorizeService {
+class AuthorizationServiceImpl @Inject()(jwtAuthService: JwtAuthService) extends AuthorizationService {
 
   /** @inheritdoc*/
   override def withAuthorization[T](context: GraphQLContext)(callback: Long => Future[T]): Future[T] =

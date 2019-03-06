@@ -19,7 +19,7 @@ class JwtAuthServiceImpl @Inject()(jwtConfig: JwtConfig,
     Jwt.encode(JwtClaim(Json.toJson(content).toString()).issuedNow.expiresIn(jwtConfig.accessTokenExpiration), jwtConfig.secret, algorithm)
 
   override def createRefreshToken(content: JwtContent, secret: String): String =
-    Jwt.encode(JwtClaim(Json.toJson(content).toString()).issuedNow.expiresIn(jwtConfig.accessTokenExpiration), secret, algorithm)
+    Jwt.encode(JwtClaim(Json.toJson(content).toString()).issuedNow.expiresIn(jwtConfig.refreshTokenExpiration), secret, algorithm)
 
   override def createTokens(content: JwtContent, secret: String): Tokens =
     Tokens(createAccessToken(content), createRefreshToken(content, secret))
