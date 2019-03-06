@@ -6,7 +6,7 @@ import graphql.resolvers.UserResolver
 import models.jwt.Tokens
 import models.User
 import sangria.macros.derive.{ExcludeFields, ObjectTypeName, deriveObjectType}
-import sangria.schema.{Argument, Field, OptionType, ObjectType, StringType}
+import sangria.schema.{Argument, Field, ListType, OptionType, ObjectType, StringType}
 
 class UserSchema @Inject()(userResolver: UserResolver) {
 
@@ -28,6 +28,11 @@ class UserSchema @Inject()(userResolver: UserResolver) {
     * List of GraphQL queries defined for the User type.
     */
   val Queries: List[Field[GraphQLContext, Unit]] = List(
+    Field(
+      name = "users",
+      fieldType = ListType(UserType),
+      resolve = _ => userResolver.users()
+    ),
     Field(
       name = "findUser",
       fieldType = OptionType(UserType),

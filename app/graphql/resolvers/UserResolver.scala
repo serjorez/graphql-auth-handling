@@ -16,6 +16,8 @@ class UserResolver @Inject()(userRepository: UserRepository,
                              authorizeService: AuthorizeService,
                              implicit val executionContext: ExecutionContext) {
 
+  import authorizeService._
+
   def register(login: String, password: String)
               (context: GraphQLContext): Future[Tokens] = {
     userRepository.create(
@@ -37,11 +39,13 @@ class UserResolver @Inject()(userRepository: UserRepository,
     }
   }
 
+  def users(): Future[List[User]] = userRepository.findAll()
+
   def findUser(login: String): Future[Option[User]] = userRepository.findByLogin(login)
 
-  def currentUser(context: GraphQLContext): Future[User] = authorizeService.withAuthorization(context) {
+  def currentUser(context: GraphQLContext): Future[User] = withAuthorization(context) {
     userId =>
-      userRepository.find(userId).flatMap{
+      userRepository.find(userId).flatMap {
         case Some(user) => Future.successful(user)
         case None => Future.failed(NotFound(s"Cannot found current user, id: [$userId] is invalid"))
       }
