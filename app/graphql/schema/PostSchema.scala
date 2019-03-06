@@ -7,14 +7,12 @@ import models.Post
 import sangria.macros.derive.{ObjectTypeName, deriveObjectType}
 import sangria.schema._
 import services.AuthorizeService
-import validators.AdminAccessValidator
 
 /**
   * Defines GraphQL schema for the Post entity.
   */
 class PostSchema @Inject()(postResolver: PostResolver,
-                           authorizeService: AuthorizeService,
-                           adminAccessValidator: AdminAccessValidator) {
+                           authorizeService: AuthorizeService) {
 
   /**
     * Sangria's representation of the Post type.

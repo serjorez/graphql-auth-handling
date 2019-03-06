@@ -4,7 +4,7 @@ import com.google.inject.{AbstractModule, Provides, Scopes}
 import models.Post
 import repositories.{PostRepository, Repository}
 import services.{AuthorizeService, AuthorizeServiceImpl}
-import validators.{AdminAccessValidator, AdminAccessValidatorImpl, PostValidator, PostValidatorImpl}
+import validators.{PostValidator, PostValidatorImpl}
 
 /**
   * The Guice module with bindings related to the Post entity.
@@ -17,7 +17,6 @@ class PostModule extends AbstractModule {
   override def configure(): Unit = {
     bind(classOf[PostValidator]).to(classOf[PostValidatorImpl]).in(Scopes.SINGLETON)
     bind(classOf[AuthorizeService]).to(classOf[AuthorizeServiceImpl]).in(Scopes.SINGLETON)
-    bind(classOf[AdminAccessValidator]).to(classOf[AdminAccessValidatorImpl]).in(Scopes.SINGLETON)
   }
 
   /**
