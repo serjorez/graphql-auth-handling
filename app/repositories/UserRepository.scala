@@ -51,6 +51,11 @@ class UserRepository @Inject()(val database: AppDatabase,
     Actions.delete(id)
   }
 
+  //TODO add docs
+  def findByLogin(login: String): Future[Option[User]] = db.run {
+    Actions.findByLogin(login)
+  }
+
 
   /**
     * Provides implementation for CRUD operations on the User entity.
@@ -85,6 +90,8 @@ class UserRepository @Inject()(val database: AppDatabase,
     } yield user
 
     def delete(id: Long): DBIO[Boolean] = userQuery.filter(_.id === id).delete.map(_ == 1)
+
+    def findByLogin(login: String): DBIO[Option[User]] = userQuery.filter(user => user.login === login).result.headOption
   }
 
 }
