@@ -80,11 +80,11 @@ class UserRepository @Inject()(val database: AppDatabase,
     def update(user: User): DBIO[User] = for {
       maybeUserWithSameLogin <- userQuery.filter(_.login === user.login).result
       _ <- if (maybeUserWithSameLogin.lengthCompare(1) < 0) DBIO.successful(None) else {
-        DBIO.failed(AlreadyExists(s"User with login='${user.login}' already exists."))
+        DBIO.failed(AlreadyExists(s"User with login = '${user.login}' already exists."))
       }
       count <- userQuery.filter(_.id === user.id).update(user)
       _ <- count match {
-        case 0 => DBIO.failed(NotFound(s"Can't find user with id=${user.id}."))
+        case 0 => DBIO.failed(NotFound(s"Can't find user with id = ${user.id}."))
         case _ => DBIO.successful(())
       }
     } yield user

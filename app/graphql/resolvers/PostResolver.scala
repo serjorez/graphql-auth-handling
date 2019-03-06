@@ -77,9 +77,10 @@ class PostResolver @Inject()(postRepository: Repository[Post],
             userRepository.find(userId).flatMap {
               case Some(user) if user.role == User.role.ADMIN =>
                 postRepository.update(Post(post.id, post.authorId, title, content))
-              case _ => Future.failed(Forbidden(s"Only author of the post with id: [$id] can update it."))
+              case _ => Future.failed(Forbidden(s"Only author of the post with id = $id can update it."))
             }
           }
+        case None => Future.failed(NotFound(s"Post with id: id = $id not found."))
       }
   }
 
@@ -101,9 +102,10 @@ class PostResolver @Inject()(postRepository: Repository[Post],
             userRepository.find(userId).flatMap {
               case Some(user) if user.role == User.role.ADMIN =>
                 postRepository.delete(id)
-              case _ => Future.failed(Forbidden(s"Only author of the post with id: [$id] can delete it."))
+              case _ => Future.failed(Forbidden(s"Only author of the post with id = $id can delete it."))
             }
           }
+        case None => Future.failed(NotFound(s"Post with id: id = $id not found."))
       }
   }
 }
