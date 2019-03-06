@@ -16,11 +16,11 @@ class UserResolver @Inject()(userRepository: UserRepository,
                              authorizeService: AuthorizeService,
                              implicit val executionContext: ExecutionContext) {
 
-  def register(login: String, password: String, role: Option[String])
+  def register(login: String, password: String)
               (context: GraphQLContext): Future[Tokens] = {
     userRepository.create(
       User(
-        role = role.getOrElse(User.role.USER),
+        role = User.role.USER,
         password = BCrypt.hashpw(password, BCrypt.gensalt),
         login = login)
     ).map(user => jwtAuthService.createTokens(JwtContent(user.id.get), user.password))

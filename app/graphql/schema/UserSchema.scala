@@ -6,7 +6,7 @@ import graphql.resolvers.UserResolver
 import models.jwt.Tokens
 import models.User
 import sangria.macros.derive.{ExcludeFields, ObjectTypeName, deriveObjectType}
-import sangria.schema.{Argument, Field, OptionType, ObjectType, OptionInputType, StringType}
+import sangria.schema.{Argument, Field, OptionType, ObjectType, StringType}
 
 class UserSchema @Inject()(userResolver: UserResolver) {
 
@@ -50,14 +50,12 @@ class UserSchema @Inject()(userResolver: UserResolver) {
       fieldType = TokensType,
       arguments = List(
         Argument("login", StringType),
-        Argument("password", StringType),
-        Argument("role", OptionInputType(StringType))
+        Argument("password", StringType)
       ),
       resolve = sangriaContext =>
         userResolver.register(
           sangriaContext.arg[String]("login"),
           sangriaContext.arg[String]("password"),
-          sangriaContext.arg[Option[String]]("role"),
         )(sangriaContext.ctx)
     ),
     Field(
