@@ -19,7 +19,7 @@ class JwtAuthServiceImpl @Inject()(jwtConfig: JwtConfig,
     Jwt.encode(JwtClaim(Json.toJson(content).toString()).issuedNow.expiresIn(jwtConfig.accessTokenExpiration), jwtConfig.secret, algorithm)
 
   override def createRefreshToken(content: JwtContent, secret: String): String =
-    Jwt.encode(JwtClaim(Json.toJson(content).toString()).issuedNow.expiresIn(jwtConfig.refreshTokenExpiration), secret, algorithm)
+    Jwt.encode(JwtClaim(Json.toJson(content).toString()).issuedNow.expiresIn(jwtConfig.refreshTokenExpiration), jwtConfig.secret + secret, algorithm)
 
   override def createTokens(content: JwtContent, secret: String): Tokens =
     Tokens(createAccessToken(content), createRefreshToken(content, secret))
@@ -33,7 +33,7 @@ class JwtAuthServiceImpl @Inject()(jwtConfig: JwtConfig,
   }
 
   override def decodeRefreshToken(token: String, secret: String): Try[JwtContent] = withExceptionTransforming {
-    Jwt.decodeRaw(token, secret, Seq(algorithm)).map(Json.parse(_).as[JwtContent])
+    Jwt.decodeRaw(token, jwtConfig.secret + secret, Seq(algorithm)).map(Json.parse(_).as[JwtContent])
   }
 
   private def withExceptionTransforming[T](maybeResult: Try[T]): Try[T] = maybeResult.recover {
