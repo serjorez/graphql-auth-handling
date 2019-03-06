@@ -6,7 +6,7 @@ import graphql.resolvers.UserResolver
 import models.jwt.Tokens
 import models.User
 import sangria.macros.derive.{ExcludeFields, ObjectTypeName, deriveObjectType}
-import sangria.schema.{Argument, Field, ObjectType, OptionInputType, StringType}
+import sangria.schema.{Argument, Field, OptionType, ObjectType, OptionInputType, StringType}
 
 class UserSchema @Inject()(userResolver: UserResolver) {
 
@@ -23,6 +23,23 @@ class UserSchema @Inject()(userResolver: UserResolver) {
     */
   implicit val TokensType: ObjectType[GraphQLContext, Tokens] =
     deriveObjectType[GraphQLContext, Tokens](ObjectTypeName("Tokens"))
+
+  /**
+    * List of GraphQL queries defined for the User type.
+    */
+  val Queries: List[Field[GraphQLContext, Unit]] = List(
+    Field(
+      name = "findUser",
+      fieldType = OptionType(UserType),
+      arguments = List(Argument("login", StringType)),
+      resolve = sangriaContext => userResolver.findUser(sangriaContext.arg[String]("login"))
+    ),
+    Field(
+      name = "currentUser",
+      fieldType = UserType,
+      resolve = sangriaContext => userResolver.currentUser(sangriaContext.ctx)
+    )
+  )
 
   /**
     * List of GraphQL mutations defined for the User type.
