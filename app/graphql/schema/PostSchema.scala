@@ -37,9 +37,8 @@ class PostSchema @Inject()(postResolver: PostResolver,
       arguments = List(
         Argument("id", LongType)
       ),
-      resolve =
-        sangriaContext =>
-          postResolver.findPost(sangriaContext.args.arg[Long]("id"))
+      resolve = sangriaContext =>
+        postResolver.findPost(sangriaContext.args.arg[Long]("id"))
     )
   )
 
@@ -55,14 +54,10 @@ class PostSchema @Inject()(postResolver: PostResolver,
         Argument("content", StringType)
       ),
       resolve = sangriaContext =>
-        authorizeService.withAuthorization(sangriaContext.ctx)(
-          userId =>
-            postResolver.addPost(
-              sangriaContext.args.arg[String]("title"),
-              sangriaContext.args.arg[String]("content"),
-              userId.toLong //TODO fix that
-            )
-        )
+        postResolver.addPost(
+          sangriaContext.arg[String]("title"),
+          sangriaContext.arg[String]("content"),
+        )(sangriaContext.ctx)
     ),
     Field(
       name = "updatePost",
@@ -73,13 +68,11 @@ class PostSchema @Inject()(postResolver: PostResolver,
         Argument("content", StringType)
       ),
       resolve = sangriaContext =>
-        adminAccessValidator.withAdminAccessValidation(sangriaContext.ctx)(
-          postResolver.updatePost(
-            sangriaContext.args.arg[Long]("id"),
-            sangriaContext.args.arg[String]("title"),
-            sangriaContext.args.arg[String]("content")
-          )
-        )
+        postResolver.updatePost(
+          sangriaContext.arg[Long]("id"),
+          sangriaContext.arg[String]("title"),
+          sangriaContext.arg[String]("content")
+        )(sangriaContext.ctx)
     ),
     Field(
       name = "deletePost",
@@ -87,11 +80,8 @@ class PostSchema @Inject()(postResolver: PostResolver,
       arguments = List(
         Argument("id", LongType)
       ),
-      resolve =
-        sangriaContext =>
-          adminAccessValidator.withAdminAccessValidation(sangriaContext.ctx)(
-            postResolver.deletePost(sangriaContext.args.arg[Long]("id"))
-          )
+      resolve = sangriaContext =>
+        postResolver.deletePost(sangriaContext.arg[Long]("id"))(sangriaContext.ctx)
     )
   )
 }
