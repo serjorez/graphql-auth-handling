@@ -1,14 +1,16 @@
 package graphql
 
 import com.google.inject.{Inject, Singleton}
-import graphql.schema.PostSchema
+import graphql.schema.{JwtSchema, PostSchema, UserSchema}
 import sangria.schema.{ObjectType, fields}
 
 /**
   * Defines the global GraphQL-related objects of the application.
   */
 @Singleton
-class GraphQL @Inject()(val postSchema: PostSchema) {
+class GraphQL @Inject()(postSchema: PostSchema,
+                        userSchema: UserSchema,
+                        jwtSchema: JwtSchema) {
 
   /**
     * The constant that signifies the maximum allowed depth of query.
@@ -26,13 +28,16 @@ class GraphQL @Inject()(val postSchema: PostSchema) {
   val Schema = sangria.schema.Schema(
     query = ObjectType("Query",
       fields(
-        postSchema.Queries: _*
+        postSchema.Queries ++
+          userSchema.Queries: _*
       )
     ),
     mutation = Some(
       ObjectType("Mutation",
         fields(
-          postSchema.Mutations: _*
+          postSchema.Mutations ++
+            userSchema.Mutations ++
+            jwtSchema.Mutations: _*
         )
       )
     )
