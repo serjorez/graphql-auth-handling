@@ -1,6 +1,6 @@
 package validators
 
-import graphql.Context
+import graphql.GraphQLContext
 
 import scala.concurrent.Future
 
@@ -17,5 +17,5 @@ trait AdminAccessValidator {
     * @tparam T generic return type
     * @return result of the callback function
     */
-  def withAdminAccessValidation[T](context: Context)(callback: => Future[T]): Future[T]
+  def withAdminAccessValidation[T](context: GraphQLContext)(callback: => Future[T]): Future[T]
 }

@@ -1,6 +1,6 @@
 package services
 
-import graphql.Context
+import graphql.GraphQLContext
 
 import scala.concurrent.Future
 
@@ -17,5 +17,5 @@ trait PostsAuthorizeService {
     * @tparam T generic return type
     * @return result of the callback function
     */
-  def withPostAuthorization[T](context: Context)(callback: String => Future[T]): Future[T]
+  def withPostAuthorization[T](context: GraphQLContext)(callback: String => Future[T]): Future[T]
 }

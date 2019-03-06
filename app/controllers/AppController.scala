@@ -1,7 +1,7 @@
 package controllers
 
 import com.google.inject.{Inject, Singleton}
-import graphql.{GraphQL, Context}
+import graphql.{GraphQL, GraphQLContext}
 import models.errors.{TooComplexQueryError, UnsupportedBodyTypeError}
 import play.api.libs.json._
 import play.api.mvc._
@@ -62,7 +62,7 @@ class AppController @Inject()(controllerComponents: ControllerComponents,
 
       maybeQuery match {
         case Success((query, operationName, variables)) =>
-          val httpContext = Context(request.headers, request.cookies)
+          val httpContext = GraphQLContext(request.headers, request.cookies)
           executeQuery(query, variables, operationName, httpContext)
             .map(_.withHeaders(httpContext.newHeaders: _*).withCookies(httpContext.newCookies: _*))
         case Failure(error) => Future.successful {
@@ -101,15 +101,15 @@ class AppController @Inject()(controllerComponents: ControllerComponents,
   def executeQuery(query: String,
                    variables: Option[JsObject] = None,
                    operation: Option[String] = None,
-                   context: Context): Future[Result] = QueryParser.parse(query) match {
+                   context: GraphQLContext): Future[Result] = QueryParser.parse(query) match {
     case Success(queryAst: Document) => Executor.execute(
       schema = graphQL.Schema,
       queryAst = queryAst,
       userContext = context,
       variables = variables.getOrElse(Json.obj()),
       queryReducers = List(
-        QueryReducer.rejectMaxDepth[Context](graphQL.maxQueryDepth),
-        QueryReducer.rejectComplexQueries[Context](graphQL.maxQueryComplexity, (_, _) => TooComplexQueryError())
+        QueryReducer.rejectMaxDepth[GraphQLContext](graphQL.maxQueryDepth),
+        QueryReducer.rejectComplexQueries[GraphQLContext](graphQL.maxQueryComplexity, (_, _) => TooComplexQueryError())
       )
     ).map(Ok(_)).recover {
       case error: QueryAnalysisError ⇒ BadRequest(error.resolveError)

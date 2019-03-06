@@ -2,7 +2,7 @@ package services
 
 import java.util.UUID
 
-import graphql.Context
+import graphql.GraphQLContext
 import play.api.mvc.Cookie
 
 import scala.concurrent.Future
@@ -13,7 +13,7 @@ import scala.concurrent.Future
 class PostsAuthorizeServiceImpl extends PostsAuthorizeService {
 
   /** @inheritdoc*/
-  override def withPostAuthorization[T](context: Context)(callback: String => Future[T]): Future[T] =
+  override def withPostAuthorization[T](context: GraphQLContext)(callback: String => Future[T]): Future[T] =
     context.requestCookies.get("my-id") match {
       case Some(id) => callback(id.value)
       case None =>

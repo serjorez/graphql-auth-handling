@@ -1,7 +1,7 @@
 package graphql.schema
 
 import com.google.inject.Inject
-import graphql.Context
+import graphql.GraphQLContext
 import graphql.resolvers.PostResolver
 import models.Post
 import sangria.macros.derive.{ObjectTypeName, deriveObjectType}
@@ -20,12 +20,12 @@ class PostSchema @Inject()(postResolver: PostResolver,
     * Sangria's representation of the Post type.
     * It's necessary to convert Post object into Sangria's GraphQL object to represent it in the GraphQL format.
     */
-  implicit val PostType: ObjectType[Context, Post] = deriveObjectType[Context, Post](ObjectTypeName("Post"))
+  implicit val PostType: ObjectType[GraphQLContext, Post] = deriveObjectType[GraphQLContext, Post](ObjectTypeName("Post"))
 
   /**
     * List of GraphQL queries defined for the Post type.
     */
-  val Queries: List[Field[Context, Unit]] = List(
+  val Queries: List[Field[GraphQLContext, Unit]] = List(
     Field(
       name = "posts",
       fieldType = ListType(PostType),
@@ -46,7 +46,7 @@ class PostSchema @Inject()(postResolver: PostResolver,
   /**
     * List of GraphQL mutations defined for the Post type.
     */
-  val Mutations: List[Field[Context, Unit]] = List(
+  val Mutations: List[Field[GraphQLContext, Unit]] = List(
     Field(
       name = "addPost",
       fieldType = PostType,

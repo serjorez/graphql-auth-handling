@@ -2,7 +2,7 @@ package validators
 
 import com.google.inject.Inject
 import config.AccessConfig
-import graphql.Context
+import graphql.GraphQLContext
 import models.errors.Forbidden
 
 import scala.concurrent.Future
@@ -13,7 +13,7 @@ import scala.concurrent.Future
 class AdminAccessValidatorImpl @Inject()(config: AccessConfig) extends AdminAccessValidator {
 
   /** @inheritdoc*/
-  override def withAdminAccessValidation[T](context: Context)
+  override def withAdminAccessValidation[T](context: GraphQLContext)
                                            (callback: => Future[T]): Future[T] = {
     context.requestCookies.get("admin-access-token") match {
       case Some(value) if config.getAdminAccessToken == value.value => callback
