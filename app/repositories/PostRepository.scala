@@ -15,8 +15,8 @@ import scala.concurrent.{ExecutionContext, Future}
   * @param executionContext a thread pool to asynchronously execute operations
   */
 @Singleton
-class PostRepository @Inject()(val database: AppDatabase,
-                               implicit val executionContext: ExecutionContext) extends Repository[Post] {
+class PostRepository @Inject()(val database: AppDatabase)
+                              (implicit executionContext: ExecutionContext) extends Repository[Post] {
 
   /**
     * Specific database

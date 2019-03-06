@@ -9,8 +9,8 @@ import slick.lifted
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UserRepository @Inject()(val database: AppDatabase,
-                               implicit val executionContext: ExecutionContext) extends Repository[User] {
+class UserRepository @Inject()(val database: AppDatabase)
+                               (implicit executionContext: ExecutionContext) extends Repository[User] {
 
   /**
     * Specific database

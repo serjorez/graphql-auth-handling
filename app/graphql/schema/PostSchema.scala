@@ -1,11 +1,10 @@
 package graphql.schema
 
+import sangria.schema._
+import graphql.GraphQLTypes._
 import com.google.inject.Inject
 import graphql.GraphQLContext
 import graphql.resolvers.PostResolver
-import models.Post
-import sangria.macros.derive.{ObjectTypeName, deriveObjectType}
-import sangria.schema._
 import services.AuthorizationService
 
 /**
@@ -13,12 +12,6 @@ import services.AuthorizationService
   */
 class PostSchema @Inject()(postResolver: PostResolver,
                            authorizeService: AuthorizationService) {
-
-  /**
-    * Sangria's representation of the Post type.
-    * It's necessary to convert Post object into Sangria's GraphQL object to represent it in the GraphQL format.
-    */
-  implicit val PostType: ObjectType[GraphQLContext, Post] = deriveObjectType[GraphQLContext, Post](ObjectTypeName("Post"))
 
   /**
     * List of GraphQL queries defined for the Post type.

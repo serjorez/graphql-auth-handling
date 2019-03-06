@@ -20,8 +20,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class PostResolver @Inject()(postRepository: Repository[Post],
                              userRepository: UserRepository,
                              postValidator: PostValidator,
-                             authorizeService: AuthorizationService,
-                             implicit val executionContext: ExecutionContext) {
+                             authorizeService: AuthorizationService)
+                            (implicit executionContext: ExecutionContext) {
 
   import postValidator._
   import authorizeService._

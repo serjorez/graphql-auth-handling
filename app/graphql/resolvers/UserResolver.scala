@@ -13,8 +13,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class UserResolver @Inject()(userRepository: UserRepository,
                              jwtAuthService: JwtAuthService,
-                             authorizeService: AuthorizationService,
-                             implicit val executionContext: ExecutionContext) {
+                             authorizeService: AuthorizationService)
+                            (implicit executionContext: ExecutionContext) {
 
   import authorizeService._
 
