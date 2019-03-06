@@ -7,12 +7,13 @@ import models.jwt.{JwtContent, Tokens}
 import models.User
 import org.mindrot.jbcrypt.BCrypt
 import repositories.UserRepository
-import services.JwtAuthService
+import services.{AuthorizeService, JwtAuthService}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class UserResolver @Inject()(userRepository: UserRepository,
                              jwtAuthService: JwtAuthService,
+                             authorizeService: AuthorizeService,
                              implicit val executionContext: ExecutionContext) {
 
   def register(login: String, password: String, role: Option[String])
@@ -37,4 +38,12 @@ class UserResolver @Inject()(userRepository: UserRepository,
   }
 
   def findUser(login: String): Future[Option[User]] = userRepository.findByLogin(login)
+
+  def currentUser(context: GraphQLContext): Future[User] = authorizeService.withAuthorization(context) {
+    userId =>
+      userRepository.find(userId).flatMap{
+        case Some(user) => Future.successful(user)
+        case None => Future.failed(NotFound(s"Cannot found current user, id: [$userId] is invalid"))
+      }
+  }
 }
