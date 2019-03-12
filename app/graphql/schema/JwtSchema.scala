@@ -6,8 +6,14 @@ import graphql.GraphQLContext
 import graphql.resolvers.JwtResolver
 import sangria.schema.{Argument, Field, StringType}
 
+/**
+  * Defines GraphQL schema for operations with JWT tokens.
+  */
 class JwtSchema @Inject()(jwtResolver: JwtResolver) {
 
+  /**
+    * List of GraphQL queries defined for operations with JWT tokens.
+    */
   val Mutations: List[Field[GraphQLContext, Unit]] = List(
     Field(
       name = "refreshTokens",
