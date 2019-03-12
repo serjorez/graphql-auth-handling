@@ -11,7 +11,6 @@ import com.typesafe.config.Config
 @Singleton
 class JwtConfig @Inject()(config: Config) {
 
-
   /**
     * The secret key that is used to generate the access key.
     * Must be stored on the server and never pass to client.
