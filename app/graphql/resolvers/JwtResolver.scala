@@ -9,9 +9,22 @@ import services.JwtAuthService
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
+/**
+  * A resolver that does actions with JWT tokens.
+  *
+  * @param userRepository   a repository that provides basic operations for the User entity
+  * @param jwtAuthService   a service that provides operations with jwt tokens
+  * @param executionContext a thread pool to asynchronously execute operations
+  */
 class JwtResolver @Inject()(userRepository: UserRepository, jwtAuthService: JwtAuthService)
                            (implicit executionContext: ExecutionContext) {
 
+  /**
+    * Refreshes a jwt tokens.
+    *
+    * @param refreshToken a refresh token
+    * @return tokens entity
+    */
   def refreshTokens(refreshToken: String): Future[Tokens] =
     jwtAuthService.decodeContent(refreshToken) match {
       case Success(content) =>
