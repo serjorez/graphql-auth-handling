@@ -6,6 +6,9 @@ import graphql.GraphQLContext
 import graphql.resolvers.UserResolver
 import sangria.schema.{Argument, Field, ListType, OptionType, StringType}
 
+/**
+  * Defines GraphQL schema for the User entity.
+  */
 class UserSchema @Inject()(userResolver: UserResolver) {
 
   /**
