@@ -20,8 +20,8 @@ class UserSchema @Inject()(userResolver: UserResolver) {
     Field(
       name = "findUser",
       fieldType = OptionType(UserType),
-      arguments = List(Argument("login", StringType)),
-      resolve = sangriaContext => userResolver.findUser(sangriaContext.arg[String]("login"))
+      arguments = List(Argument("username", StringType)),
+      resolve = sangriaContext => userResolver.findUser(sangriaContext.arg[String]("username"))
     ),
     Field(
       name = "currentUser",
@@ -38,12 +38,12 @@ class UserSchema @Inject()(userResolver: UserResolver) {
       name = "register",
       fieldType = TokensType,
       arguments = List(
-        Argument("login", StringType),
+        Argument("username", StringType),
         Argument("password", StringType)
       ),
       resolve = sangriaContext =>
         userResolver.register(
-          sangriaContext.arg[String]("login"),
+          sangriaContext.arg[String]("username"),
           sangriaContext.arg[String]("password"),
         )(sangriaContext.ctx)
     ),
@@ -51,12 +51,12 @@ class UserSchema @Inject()(userResolver: UserResolver) {
       name = "login",
       fieldType = TokensType,
       arguments = List(
-        Argument("login", StringType),
+        Argument("username", StringType),
         Argument("password", StringType)
       ),
       resolve = sangriaContext =>
         userResolver.login(
-          sangriaContext.arg[String]("login"),
+          sangriaContext.arg[String]("username"),
           sangriaContext.arg[String]("password")
         )(sangriaContext.ctx)
     )

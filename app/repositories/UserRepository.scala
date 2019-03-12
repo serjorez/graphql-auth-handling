@@ -52,8 +52,8 @@ class UserRepository @Inject()(val database: AppDatabase)
   }
 
   //TODO add docs
-  def findByLogin(login: String): Future[Option[User]] = db.run {
-    Actions.findByLogin(login)
+  def findByUsername(username: String): Future[Option[User]] = db.run {
+    Actions.findByUsername(username)
   }
 
 
@@ -67,9 +67,9 @@ class UserRepository @Inject()(val database: AppDatabase)
       _ <- maybeUser.fold(DBIO.successful(None)) {
         _ => DBIO.failed(AlreadyExists(s"User with id = ${user.id} already exists."))
       }
-      userWithSameLogin <- userQuery.filter(_.login === user.login).result
-      id <- if (userWithSameLogin.lengthCompare(1) < 0) userQuery returning userQuery.map(_.id) += user else {
-        DBIO.failed(AlreadyExists(s"User with login = '${user.login}' already exists."))
+      userWithSameUsername <- userQuery.filter(_.username === user.username).result
+      id <- if (userWithSameUsername.lengthCompare(1) < 0) userQuery returning userQuery.map(_.id) += user else {
+        DBIO.failed(AlreadyExists(s"User with username = '${user.username}' already exists."))
       }
     } yield user.copy(id = Some(id))
 
@@ -78,9 +78,9 @@ class UserRepository @Inject()(val database: AppDatabase)
     def findAll(): DBIO[List[User]] = userQuery.result.map(_.toList)
 
     def update(user: User): DBIO[User] = for {
-      maybeUserWithSameLogin <- userQuery.filter(_.login === user.login).result
-      _ <- if (maybeUserWithSameLogin.lengthCompare(1) < 0) DBIO.successful(None) else {
-        DBIO.failed(AlreadyExists(s"User with login = '${user.login}' already exists."))
+      maybeUserWithSameUsername <- userQuery.filter(_.username === user.username).result
+      _ <- if (maybeUserWithSameUsername.lengthCompare(1) < 0) DBIO.successful(None) else {
+        DBIO.failed(AlreadyExists(s"User with username = '${user.username}' already exists."))
       }
       count <- userQuery.filter(_.id === user.id).update(user)
       _ <- count match {
@@ -91,7 +91,8 @@ class UserRepository @Inject()(val database: AppDatabase)
 
     def delete(id: Long): DBIO[Boolean] = userQuery.filter(_.id === id).delete.map(_ == 1)
 
-    def findByLogin(login: String): DBIO[Option[User]] = userQuery.filter(user => user.login === login).result.headOption
+    def findByUsername(username: String): DBIO[Option[User]] =
+      userQuery.filter(user => user.username === username).result.headOption
   }
 
 }

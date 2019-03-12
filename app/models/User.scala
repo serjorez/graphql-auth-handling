@@ -8,12 +8,12 @@ import slick.lifted.{Tag => SlickTag}
   *
   * @param id       an id of the user
   * @param role     a role of the user
-  * @param login    a login of the user
+  * @param username a username of the user
   * @param password a password of the post
   */
 case class User(id: Option[Long] = None,
                 role: String = User.role.USER,
-                login: String,
+                username: String,
                 password: String)
 
 /**
@@ -26,11 +26,11 @@ object User extends ((Option[Long], String, String, String) => User) {
 
     def role = column[String]("ROLE")
 
-    def login = column[String]("LOGIN")
+    def username = column[String]("USERNAME")
 
     def password = column[String]("PASSWORD")
 
-    def * = (id.?, role, login, password).mapTo[User]
+    def * = (id.?, role, username, password).mapTo[User]
   }
 
   /**

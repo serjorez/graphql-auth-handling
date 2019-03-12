@@ -29,36 +29,36 @@ class UserResolver @Inject()(userRepository: UserRepository,
   /**
     * Registers a new user.
     *
-    * @param login    a login of the user
+    * @param username a username of the user
     * @param password a password of the user
     * @param context  a graphql context
     * @return tokens entity
     */
-  def register(login: String, password: String)
+  def register(username: String, password: String)
               (context: GraphQLContext): Future[Tokens] =
     userRepository.create(
       User(
         role = User.role.USER,
         password = BCrypt.hashpw(password, BCrypt.gensalt),
-        login = login)
+        username = username)
     ).map(user => jwtAuthService.createTokens(JwtContent(user.id.get), user.password))
 
   /**
     * Login a new user.
     *
-    * @param login    a login of the user
+    * @param username a username of the user
     * @param password a password of the user
     * @param context  a graphql context
     * @return tokens entity
     */
-  def login(login: String, password: String)
+  def login(username: String, password: String)
            (context: GraphQLContext): Future[Tokens] =
-    userRepository.findByLogin(login).flatMap {
+    userRepository.findByUsername(username).flatMap {
       case Some(user) =>
         if (BCrypt.checkpw(password, user.password)) {
           Future.successful(jwtAuthService.createTokens(JwtContent(user.id.get), user.password))
         } else Future.failed(Unauthenticated("Wrong password."))
-      case None => Future.failed(NotFound(s"User with login: [$login] not found."))
+      case None => Future.failed(NotFound(s"User with username: [$username] not found."))
     }
 
   /**
@@ -71,10 +71,10 @@ class UserResolver @Inject()(userRepository: UserRepository,
   /**
     * Finds a user by id.
     *
-    * @param login an login of the user
+    * @param username an username of the user
     * @return found user
     */
-  def findUser(login: String): Future[Option[User]] = userRepository.findByLogin(login)
+  def findUser(username: String): Future[Option[User]] = userRepository.findByUsername(username)
 
   /**
     * Returns current user by token, stored in cookies.
