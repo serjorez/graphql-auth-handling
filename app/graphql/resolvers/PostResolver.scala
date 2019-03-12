@@ -23,8 +23,7 @@ class PostResolver @Inject()(postRepository: Repository[Post],
                              authorizeService: AuthorizationService)
                             (implicit executionContext: ExecutionContext) {
 
-  import postValidator._
-  import authorizeService._
+  import postValidator._, authorizeService._
 
   /**
     * Finds all posts.

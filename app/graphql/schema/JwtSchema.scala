@@ -13,7 +13,8 @@ class JwtSchema @Inject()(jwtResolver: JwtResolver) {
       name = "refreshTokens",
       fieldType = TokensType,
       arguments = List(Argument("refreshToken", StringType)),
-      resolve = sc => jwtResolver.refreshTokens(sc.args.arg[String]("refreshToken"))
+      resolve = sangriaContext =>
+        jwtResolver.refreshTokens(sangriaContext.args.arg[String]("refreshToken"))
     )
   )
 }
