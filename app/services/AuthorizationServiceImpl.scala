@@ -8,11 +8,11 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 /**
-  * Provides authorizing functions.
+  * Default implementation of AuthorizationService, using JwtAuthService to authorize user by context.
   */
 class AuthorizationServiceImpl @Inject()(jwtAuthService: JwtAuthService) extends AuthorizationService {
 
-  /** @inheritdoc*/
+  /** @inheritdoc */
   override def withAuthorization[T](context: GraphQLContext)(callback: Long => Future[T]): Future[T] =
     context.requestCookies.get("accessToken") match {
       case Some(token) =>
