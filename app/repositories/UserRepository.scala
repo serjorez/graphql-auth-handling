@@ -8,6 +8,12 @@ import slick.lifted
 
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+  * Provides basic CRUD operations on the User entity.
+  *
+  * @param database         a database access object
+  * @param executionContext a thread pool to asynchronously execute operations
+  */
 @Singleton
 class UserRepository @Inject()(val database: AppDatabase)
                                (implicit executionContext: ExecutionContext) extends Repository[User] {
@@ -51,7 +57,12 @@ class UserRepository @Inject()(val database: AppDatabase)
     Actions.delete(id)
   }
 
-  //TODO add docs
+  /**
+    * Returns a user by username.
+    *
+    * @param username username of the user
+    * @return found user
+    */
   def findByUsername(username: String): Future[Option[User]] = db.run {
     Actions.findByUsername(username)
   }
