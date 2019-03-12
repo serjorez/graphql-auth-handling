@@ -10,7 +10,7 @@ import scala.util.{Failure, Success}
 /**
   * Default implementation of AuthorizationService, using JwtAuthService to authorize user by context.
   */
-class AuthorizationServiceImpl @Inject()(jwtAuthService: JwtAuthService) extends AuthorizationService {
+class AuthorizationServiceImpl @Inject()(jwtAuthService: JwtService) extends AuthorizationService {
 
   /** @inheritdoc */
   override def withAuthorization[T](context: GraphQLContext)(callback: Long => Future[T]): Future[T] =

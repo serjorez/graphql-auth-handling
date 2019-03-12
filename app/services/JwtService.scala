@@ -10,7 +10,7 @@ import scala.util.Try
   * @define token   a JSON Web Token as a Base64 url-safe encoded String which can be used inside an HTTP header
   * @define secret  an encoded String which can be used in a validation step
   */
-trait JwtAuthService {
+trait JwtService {
 
   /** Create access token (JWT with a short lifetime).
     * Access token's secret should contain only server secret (that should be stored in implementation).

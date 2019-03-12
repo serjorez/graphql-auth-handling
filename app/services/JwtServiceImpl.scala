@@ -18,8 +18,8 @@ import scala.util.Try
   * @param jwtConfig JWT configs provider
   * @param algorithm injected implementation of HMAC algorithm
   */
-class JwtAuthServiceImpl @Inject()(jwtConfig: JwtConfig,
-                                   algorithm: JwtHmacAlgorithm) extends JwtAuthService {
+class JwtServiceImpl @Inject()(jwtConfig: JwtConfig,
+                               algorithm: JwtHmacAlgorithm) extends JwtService {
 
   /** @inheritdoc */
   override def createAccessToken(content: JwtContent): String =

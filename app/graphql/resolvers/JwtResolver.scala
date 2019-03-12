@@ -4,7 +4,7 @@ import com.google.inject.Inject
 import models.errors.NotFound
 import models.jwt.{JwtContent, Tokens}
 import repositories.UserRepository
-import services.JwtAuthService
+import services.JwtService
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -13,10 +13,10 @@ import scala.util.{Failure, Success}
   * A resolver that does actions with JWT tokens.
   *
   * @param userRepository   a repository that provides basic operations for the User entity
-  * @param jwtAuthService   a service that provides operations with jwt tokens
+  * @param jwtService   a service that provides operations with jwt tokens
   * @param executionContext a thread pool to asynchronously execute operations
   */
-class JwtResolver @Inject()(userRepository: UserRepository, jwtAuthService: JwtAuthService)
+class JwtResolver @Inject()(userRepository: UserRepository, jwtService: JwtService)
                            (implicit executionContext: ExecutionContext) {
 
   /**
@@ -26,16 +26,16 @@ class JwtResolver @Inject()(userRepository: UserRepository, jwtAuthService: JwtA
     * @return tokens entity
     */
   def refreshTokens(refreshToken: String): Future[Tokens] =
-    jwtAuthService.decodeContent(refreshToken) match {
+    jwtService.decodeContent(refreshToken) match {
       case Success(content) =>
         userRepository.find(content.id).flatMap {
           case Some(user) =>
-            jwtAuthService.decodeRefreshToken(refreshToken, user.password) match {
+            jwtService.decodeRefreshToken(refreshToken, user.password) match {
               case Success(_) =>
                 Future.successful(
                   Tokens(
-                    accessToken = jwtAuthService.createAccessToken(JwtContent(content.id)),
-                    refreshToken = jwtAuthService.createRefreshToken(JwtContent(content.id), user.password)
+                    accessToken = jwtService.createAccessToken(JwtContent(content.id)),
+                    refreshToken = jwtService.createRefreshToken(JwtContent(content.id), user.password)
                   )
                 )
               case Failure(exception) => Future.failed(exception)
