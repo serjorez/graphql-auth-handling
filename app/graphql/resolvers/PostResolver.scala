@@ -28,7 +28,7 @@ class PostResolver @Inject()(postRepository: Repository[Post],
   /**
     * Finds all posts.
     *
-    * @return a list of a posts
+    * @return a list of posts
     */
   def posts: Future[List[Post]] = postRepository.findAll()
 
