@@ -5,11 +5,15 @@ import com.google.inject.Inject
 import graphql.GraphQLContext
 import graphql.resolvers.UserResolver
 import sangria.schema.{Argument, Field, ListType, OptionType, StringType}
+import services.AuthorizationService
 
 /**
   * Defines GraphQL schema for the User entity.
   */
-class UserSchema @Inject()(userResolver: UserResolver) {
+class UserSchema @Inject()(userResolver: UserResolver,
+                           authorizationService: AuthorizationService) {
+
+  import authorizationService._
 
   /**
     * List of GraphQL queries defined for the User type.
@@ -29,7 +33,11 @@ class UserSchema @Inject()(userResolver: UserResolver) {
     Field(
       name = "currentUser",
       fieldType = UserType,
-      resolve = sangriaContext => userResolver.currentUser(sangriaContext.ctx)
+      resolve = sangriaContext =>
+        withAuthorization(sangriaContext.ctx) {
+          userId =>
+            userResolver.currentUser(userId)
+        }
     )
   )
 
@@ -47,8 +55,8 @@ class UserSchema @Inject()(userResolver: UserResolver) {
       resolve = sangriaContext =>
         userResolver.register(
           sangriaContext.arg[String]("username"),
-          sangriaContext.arg[String]("password"),
-        )(sangriaContext.ctx)
+          sangriaContext.arg[String]("password")
+        )
     ),
     Field(
       name = "login",
@@ -61,7 +69,7 @@ class UserSchema @Inject()(userResolver: UserResolver) {
         userResolver.login(
           sangriaContext.arg[String]("username"),
           sangriaContext.arg[String]("password")
-        )(sangriaContext.ctx)
+        )
     )
   )
 }

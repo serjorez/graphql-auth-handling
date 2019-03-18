@@ -1,13 +1,12 @@
 package graphql.resolvers
 
 import com.google.inject.Inject
-import graphql.GraphQLContext
 import models.errors.{NotFound, Unauthenticated}
 import models.jwt.{JwtContent, Tokens}
 import models.User
 import org.mindrot.jbcrypt.BCrypt
 import repositories.UserRepository
-import services.{AuthorizationService, JwtService}
+import services.JwtService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -15,27 +14,21 @@ import scala.concurrent.{ExecutionContext, Future}
   * A resolver that does actions on the Post entity.
   *
   * @param userRepository   a repository that provides basic operations for the User entity
-  * @param jwtService   a service that provides operations with jwt tokens
-  * @param authorizeService a service that provides basic authorization operations
+  * @param jwtService       a service that provides operations with jwt tokens
   * @param executionContext a thread pool to asynchronously execute operations
   */
 class UserResolver @Inject()(userRepository: UserRepository,
-                             jwtService: JwtService,
-                             authorizeService: AuthorizationService)
+                             jwtService: JwtService)
                             (implicit executionContext: ExecutionContext) {
-
-  import authorizeService._
 
   /**
     * Registers a new user.
     *
     * @param username a username of the user
     * @param password a password of the user
-    * @param context  a graphql context
     * @return tokens entity
     */
-  def register(username: String, password: String)
-              (context: GraphQLContext): Future[Tokens] =
+  def register(username: String, password: String): Future[Tokens] =
     userRepository.create(
       User(
         role = User.role.USER,
@@ -48,11 +41,9 @@ class UserResolver @Inject()(userRepository: UserRepository,
     *
     * @param username a username of the user
     * @param password a password of the user
-    * @param context  a graphql context
     * @return tokens entity
     */
-  def login(username: String, password: String)
-           (context: GraphQLContext): Future[Tokens] =
+  def login(username: String, password: String): Future[Tokens] =
     userRepository.findByUsername(username).flatMap {
       case Some(user) =>
         if (BCrypt.checkpw(password, user.password)) {
@@ -69,7 +60,7 @@ class UserResolver @Inject()(userRepository: UserRepository,
   def users(): Future[List[User]] = userRepository.findAll()
 
   /**
-    * Finds a user by id.
+    * Finds a user by username.
     *
     * @param username an username of the user
     * @return found user
@@ -77,16 +68,14 @@ class UserResolver @Inject()(userRepository: UserRepository,
   def findUser(username: String): Future[Option[User]] = userRepository.findByUsername(username)
 
   /**
-    * Returns current user by token, stored in cookies.
+    * Returns current user by id.
     *
-    * @param context a graphql context
+    * @param userId an id of the user
     * @return found user
     */
-  def currentUser(context: GraphQLContext): Future[User] = withAuthorization(context) {
-    userId =>
-      userRepository.find(userId).flatMap {
-        case Some(user) => Future.successful(user)
-        case None => Future.failed(NotFound(s"Cannot found current user, id: [$userId] is invalid."))
-      }
-  }
+  def currentUser(userId: Long): Future[User] =
+    userRepository.find(userId).flatMap {
+      case Some(user) => Future.successful(user)
+      case None => Future.failed(NotFound(s"Cannot found current user, id: [$userId] is invalid."))
+    }
 }
