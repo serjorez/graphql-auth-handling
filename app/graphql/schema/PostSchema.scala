@@ -5,13 +5,11 @@ import graphql.GraphQLTypes._
 import com.google.inject.Inject
 import graphql.GraphQLContext
 import graphql.resolvers.PostResolver
-import services.AuthorizationService
 
 /**
   * Defines GraphQL schema for the Post entity.
   */
-class PostSchema @Inject()(postResolver: PostResolver,
-                           authorizeService: AuthorizationService) {
+class PostSchema @Inject()(postResolver: PostResolver) {
 
   /**
     * List of GraphQL queries defined for the Post type.
